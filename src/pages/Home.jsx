@@ -61,7 +61,7 @@ export default function Home() {
             borderColor="gray.400" // Adjust the border color here
             p={4}
             width={{ base: "50%", md: "100%" }}
-            whileHover={{ scale: 1.023 }}
+            whileHover={{ scale: 1.0199 }}
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
