@@ -221,7 +221,7 @@ export default function Home() {
   const currentRepos = filteredRepos.slice(startIndex, endIndex);
 
   // Determine margin based on screen size
-  const marginX = useBreakpointValue({ base: 4, lg: 28 });
+  const marginX = useBreakpointValue({ base: -3, lg: 28 });
 
   return (
     <VStack
