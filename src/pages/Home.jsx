@@ -82,63 +82,34 @@ export default function Home() {
     setCurrentPage(page);
   };
 
-  const handleCreateRepo = async () => {
-    try {
-      const response = await axios.post(
-        "https://api.github.com/user/repos",
-        {
-          name: repoName,
-          description: repoDescription,
-        },
-        {
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-          },
-        }
-      );
-      setRepos([...repos, response.data]);
-      onClose();
-      toast({
-        title: "Repository created.",
-        description: `Repository ${repoName} has been created.`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error creating repository:", error);
-      toast({
-        title: "Error creating repository.",
-        description: "An error occurred while creating the repository.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+  const handleCreateRepo = () => {
+    const newRepo = {
+      id: Date.now(),
+      name: repoName,
+      description: repoDescription,
+    };
+    setRepos([...repos, newRepo]);
+    onClose();
+    toast({
+      title: "Repository created.",
+      description: `Repository ${repoName} has been created locally.`,
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
-  const handleDeleteRepo = async (repoName) => {
-    try {
-      // Instead of making a DELETE request to the GitHub API, simply update the local state
-      setRepos(repos.filter((repo) => repo.name !== repoName));
-      toast({
-        title: "Repository deleted.",
-        description: `Repository ${repoName} has been deleted locally.`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error deleting repository:", error);
-      toast({
-        title: "Error deleting repository.",
-        description: "An error occurred while deleting the repository.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+  const handleDeleteRepo = (repoName) => {
+    setRepos(repos.filter((repo) => repo.name !== repoName));
+    toast({
+      title: "Repository deleted.",
+      description: `Repository ${repoName} has been deleted locally.`,
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
+
   const handleDeleteConfirmation = (repoName) => {
     setDeleteConfirmation({ isOpen: true, repoName });
   };
@@ -161,51 +132,26 @@ export default function Home() {
     });
   };
 
-  // Function to update repository details
-  const handleUpdateRepo = async () => {
-    try {
-      await axios.patch(
-        `https://api.github.com/repos/Arinzelight/${editRepoDetails.repoName}`,
-        {
+  const handleUpdateRepo = () => {
+    const updatedRepos = repos.map((repo) => {
+      if (repo.name === editRepoDetails.repoName) {
+        return {
+          ...repo,
           name: editRepoDetails.newName,
           description: editRepoDetails.newDescription,
-        },
-        {
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-          },
-        }
-      );
-
-      const updatedRepos = repos.map((repo) => {
-        if (repo.name === editRepoDetails.repoName) {
-          return {
-            ...repo,
-            name: editRepoDetails.newName,
-            description: editRepoDetails.newDescription,
-          };
-        }
-        return repo;
-      });
-      setRepos(updatedRepos);
-      onClose();
-      toast({
-        title: "Repository updated.",
-        description: `Repository ${editRepoDetails.repoName} has been updated.`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error updating repository:", error);
-      toast({
-        title: "Error updating repository.",
-        description: "An error occurred while updating the repository.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+        };
+      }
+      return repo;
+    });
+    setRepos(updatedRepos);
+    setEditRepoDetails({ ...editRepoDetails, isOpen: false });
+    toast({
+      title: "Repository updated.",
+      description: `Repository ${editRepoDetails.repoName} has been updated locally.`,
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   const filteredRepos = searchQuery
@@ -220,7 +166,6 @@ export default function Home() {
   const endIndex = startIndex + itemsPerPage;
   const currentRepos = filteredRepos.slice(startIndex, endIndex);
 
-  // Determine margin based on screen size
   const marginX = useBreakpointValue({ base: -4, lg: 28 });
 
   return (
@@ -306,11 +251,10 @@ export default function Home() {
                     colorScheme="gray"
                     size="sm"
                     mt={2}
-                    onClick={() => handleDeleteConfirmation(repo.name)} // Modify this line
+                    onClick={() => handleDeleteConfirmation(repo.name)}
                   >
                     Delete
                   </Button>
-
                   <Button
                     colorScheme="teal"
                     size="sm"
@@ -350,12 +294,10 @@ export default function Home() {
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Repository
             </AlertDialogHeader>
-
             <AlertDialogBody>
               Are you sure you want to delete the repository{" "}
               <strong>{deleteConfirmation.repoName}</strong>?
             </AlertDialogBody>
-
             <AlertDialogFooter>
               <Button onClick={handleCancelDelete}>Cancel</Button>
               <Button colorScheme="red" onClick={handleConfirmDelete} ml={3}>
